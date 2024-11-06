@@ -1,0 +1,87 @@
+import heapq
+
+class Node:
+    def __init__(self, state, parent=None, g=0, h=0):
+        self.state = state
+        self.parent = parent
+        self.g = g  # Cost from start node to current node
+        self.h = h  # Heuristic cost from current node to goal node
+        self.f = g + h  # Total cost (f = g + h)
+
+    def __lt__(self, other):
+        return self.f < other.f
+
+def astar(start, goal, get_neighbors, calculate_heuristic):
+    open_list = []
+    closed_set = set()
+
+    start_node = Node(start)
+    heapq.heappush(open_list, start_node)
+
+    while open_list:
+        current_node = heapq.heappop(open_list)
+
+        if current_node.state == goal:
+            path = []
+            while current_node:
+                path.append(current_node.state)
+                current_node = current_node.parent
+            return path[::-1]  # Reverse the path
+
+        closed_set.add(current_node.state)
+
+        for neighbor_state in get_neighbors(current_node.state):
+            if neighbor_state in closed_set:
+                continue
+
+            g = current_node.g + 1  # Assuming each step has a cost of 1
+            h = calculate_heuristic(neighbor_state, goal)
+            neighbor_node = Node(neighbor_state, current_node, g, h)
+
+            # Check if the neighbor is already in the open list with a lower cost
+            for open_node in open_list:
+                if open_node.state == neighbor_state and open_node.f <= neighbor_node.f:
+                    break
+            else:
+                heapq.heappush(open_list, neighbor_node)
+
+    return None  # No path found
+
+# Example usage
+def get_neighbors(state):
+    # Define your graph and obtain the neighbors for a given state
+    graph = {
+        'A': ['B', 'C'],
+        'B': ['A', 'D'],
+        'C': ['A', 'D', 'E'],
+        'D': ['B', 'C', 'F'],
+        'E': ['C', 'F'],
+        'F': ['D', 'E', 'G'],
+        'G': ['F']
+    }
+    return graph[state]
+
+def calculate_heuristic(state, goal):
+    # Define your heuristic function (e.g., Manhattan distance, Euclidean distance)
+    heuristic = {
+        'A': 4,
+        'B': 2,
+        'C': 2,
+        'D': 1,
+        'E': 2,
+        'F': 1,
+        'G': 0
+    }
+    return heuristic[state]
+
+start_node = 'A'
+goal_node = 'G'
+path = astar(start_node, goal_node, get_neighbors, calculate_heuristic)
+
+if path:
+    print(f"Shortest path from {start_node} to {goal_node}:")
+    print(" -> ".join(path))
+else:
+    print("No path found.")
+
+

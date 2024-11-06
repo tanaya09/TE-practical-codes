@@ -1,0 +1,84 @@
+from collections import deque
+
+# Node class for representing nodes in the graph
+class Node:
+    def __init__(self, value):
+        self.value = value
+        self.adjacent = []
+        self.visited = False
+
+    def add_neighbor(self, neighbor):
+        self.adjacent.append(neighbor)
+
+
+# BFS recursive implementation
+def bfs_recursive(start):
+    queue = deque()
+    queue.append(start)
+
+    return bfs_recursive_helper(queue)
+
+
+def bfs_recursive_helper(queue):
+    if not queue:
+        return
+
+    node = queue.popleft()
+    print(node.value)
+    node.visited = True
+
+    for neighbor in node.adjacent:
+        if not neighbor.visited:
+            queue.append(neighbor)
+
+    bfs_recursive_helper(queue)
+
+
+# DFS recursive implementation
+def dfs_recursive(start):
+    if not start:
+        return
+
+    print(start.value)
+    start.visited = True
+
+    for neighbor in start.adjacent:
+        if not neighbor.visited:
+            dfs_recursive(neighbor)
+
+
+# Example usage
+# Create the graph
+nodeA = Node("A")
+nodeB = Node("B")
+nodeC = Node("C")
+nodeD = Node("D")
+nodeE = Node("E")
+nodeF = Node("F")
+nodeG = Node("G")
+
+nodeA.add_neighbor(nodeB)
+nodeA.add_neighbor(nodeC)
+nodeB.add_neighbor(nodeD)
+nodeC.add_neighbor(nodeD)
+nodeC.add_neighbor(nodeE)
+nodeD.add_neighbor(nodeF)
+nodeE.add_neighbor(nodeF)
+nodeF.add_neighbor(nodeG)
+
+print("BFS Recursive:")
+bfs_recursive(nodeA)
+
+# Reset visited flags
+nodeA.visited = False
+nodeB.visited = False
+nodeC.visited = False
+nodeD.visited = False
+nodeE.visited = False
+nodeF.visited = False
+nodeG.visited = False
+
+print("\nDFS Recursive:")
+dfs_recursive(nodeA)
+
+
